@@ -15,7 +15,9 @@ import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.scheduling.annotation.EnableScheduling;
 
 import com.repository.PhoneRepository;
+import com.repository.RetailerRepository;
 import com.service.ProductInspectorService;
+import com.service.RetailerService;
 
 @Configuration
 @EnableAutoConfiguration
@@ -33,12 +35,19 @@ public class BestPrice
 			@Qualifier("emagInspector")
 			private ProductInspectorService inspectorService;
 			@Autowired
+			private RetailerService retailerService;
+			
+			@Autowired
 			private PhoneRepository phoneRepository;
-
+			@Autowired
+			private RetailerRepository retailerRepository;
+			
 			@Override
 			public void afterPropertiesSet() {
 				if (this.phoneRepository.count() == 0) 
 					this.inspectorService.initializePhoneTable();
+				if(this.retailerRepository.count() == 0)
+					this.retailerService.initializeRetailers();
 					
 			}
 		};
