@@ -1,10 +1,14 @@
 package com.model;
 
+import java.util.HashSet;
+import java.util.Set;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
 
@@ -14,28 +18,32 @@ public class Retailer {
 	
 	@Id
 	@GeneratedValue(strategy = GenerationType.AUTO)
+	@Column(name="retailer_id")
 	private int idRetailer;
 	
 	@NotNull
 	@Column(name="retailer_name")
-	private String retailerName;
+	private String name;
 	
 	@NotNull
 	@Column(name="retailer_url")
-	private String retailerUrl;
+	private String siteUrl;
 	
 	@NotNull
 	@Column(name="retailer_emblem_url")
-	private String retailerEmblem;
+	private String emblem;
+	
+	@OneToMany(mappedBy = "retailer")
+	private Set<PhoneRetailer> phoneRetailer = new HashSet<PhoneRetailer>();
 
 	public Retailer() {
 		super();
 	}
 
 	public Retailer(String retailerName, String retailerUrl, String retailerEmblem) {
-		this.retailerName = retailerName;
-		this.retailerUrl = retailerUrl;
-		this.retailerEmblem = retailerEmblem;
+		this.name = retailerName;
+		this.siteUrl = retailerUrl;
+		this.emblem = retailerEmblem;
 	}
 
 	public int getIdRetailer() {
@@ -47,26 +55,39 @@ public class Retailer {
 	}
 
 	public String getRetailerName() {
-		return retailerName;
+		return name;
 	}
 
 	public void setRetailerName(String retailerName) {
-		this.retailerName = retailerName;
+		this.name = retailerName;
 	}
 
 	public String getRetailerUrl() {
-		return retailerUrl;
+		return siteUrl;
 	}
 
 	public void setRetailerUrl(String retailerUrl) {
-		this.retailerUrl = retailerUrl;
+		this.siteUrl = retailerUrl;
 	}
 
 	public String getRetailerEmblem() {
-		return retailerEmblem;
+		return emblem;
 	}
 
 	public void setRetailerEmblem(String retailerEmblem) {
-		this.retailerEmblem = retailerEmblem;
+		this.emblem = retailerEmblem;
 	}
+	
+	
+	public Set<PhoneRetailer> getPhoneRetailer() {
+		return phoneRetailer;
+	}
+
+	public void setPhoneRetailer(Set<PhoneRetailer> phoneRetailer) {
+		this.phoneRetailer = phoneRetailer;
+	}
+	
+
+	
+	
 }

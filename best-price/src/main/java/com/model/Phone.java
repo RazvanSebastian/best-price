@@ -1,5 +1,8 @@
 package com.model;
 
+import java.util.HashSet;
+import java.util.Set;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
@@ -7,23 +10,17 @@ import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
 
 @Entity
 @Table(name = "Phone")
-public class Phone extends Product{
-
-	public enum MoneyCurrency {
-		Lei, Euros, Dollars
-	}
-
-	public enum Stock {
-		InStock, LimitedStock, OutOfStock, Soon
-	}
+public class Phone extends Product {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.AUTO)
+	@Column(name = "phone_id")
 	private int idPhone;
 
 	@Column(name = "phone_name")
@@ -32,22 +29,14 @@ public class Phone extends Product{
 	@Column(name = "phone_image")
 	private String image;
 
-	@Enumerated(EnumType.STRING)
-	@Column(name = "stock_state")
-	private Stock stock;
-
-	@Column(name = "phone_price")
-	private double price;
-
-	@Enumerated(EnumType.STRING)
-	@Column(name = "currency")
-	private MoneyCurrency moneyCurrency;
-
 	@Column(name = "rating")
 	private double rating;
 
 	@Column(name = "phone_reviews")
 	private int reviews;
+
+	@OneToMany(mappedBy = "phone")
+	private Set<PhoneRetailer> phoneRetailer = new HashSet<PhoneRetailer>();
 
 	public Phone() {
 	}
@@ -68,22 +57,6 @@ public class Phone extends Product{
 		this.image = image;
 	}
 
-	public Stock getStock() {
-		return stock;
-	}
-
-	public void setStock(Stock stock) {
-		this.stock = stock;
-	}
-
-	public double getPrice() {
-		return price;
-	}
-
-	public void setPrice(double price) {
-		this.price = price;
-	}
-
 	public double getRating() {
 		return rating;
 	}
@@ -100,19 +73,27 @@ public class Phone extends Product{
 		this.reviews = reviews;
 	}
 
-	public MoneyCurrency getMoneyCurrency() {
-		return moneyCurrency;
+	public int getIdPhone() {
+		return idPhone;
 	}
 
-	public void setMoneyCurrency(MoneyCurrency moneyCurrency) {
-		this.moneyCurrency = moneyCurrency;
+	public void setIdPhone(int idPhone) {
+		this.idPhone = idPhone;
 	}
 
 	@Override
 	public String toString() {
 		// TODO Auto-generated method stub
-		return title + " PRICE=" + price + " " + moneyCurrency;
+		return title;
 
+	}
+
+	public Set<PhoneRetailer> getPhoneRetailer() {
+		return phoneRetailer;
+	}
+
+	public void setPhoneRetailer(Set<PhoneRetailer> phoneRetailer) {
+		this.phoneRetailer = phoneRetailer;
 	}
 
 }

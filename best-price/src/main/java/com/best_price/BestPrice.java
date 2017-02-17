@@ -44,11 +44,10 @@ public class BestPrice
 			
 			@Override
 			public void afterPropertiesSet() {
-				if (this.phoneRepository.count() == 0) 
-					this.inspectorService.initializePhoneTable();
 				if(this.retailerRepository.count() == 0)
 					this.retailerService.initializeRetailers();
-					
+				if (this.phoneRepository.count() == 0) 
+					this.inspectorService.initializePhoneTable();					
 			}
 		};
 	}

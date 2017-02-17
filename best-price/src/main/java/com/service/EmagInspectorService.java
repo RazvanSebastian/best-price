@@ -1,7 +1,9 @@
 package com.service;
 
 import java.io.IOException;
+
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 
@@ -15,16 +17,24 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.model.Phone;
-import com.model.Phone.MoneyCurrency;
-import com.model.Phone.Stock;
+import com.model.PhoneRetailer;
+import com.model.PhoneRetailer.MoneyCurrency;
+import com.model.PhoneRetailer.Stock;
 import com.model.Product;
+import com.model.Retailer;
 import com.repository.PhoneRepository;
+import com.repository.PhoneRetailerRepository;
+import com.repository.RetailerRepository;
 
 
 @Service("emagInspector")
 public class EmagInspectorService implements ProductInspectorService{
 	@Autowired 
 	private PhoneRepository phoneRepository;
+	@Autowired
+	private RetailerRepository retailerRepository;
+	@Autowired
+	private PhoneRetailerRepository phoneRetailerRepository;
 
 	private Document receivePageByUrl(String url) {
 		Document doc;
@@ -103,30 +113,44 @@ public class EmagInspectorService implements ProductInspectorService{
 	private List<Product> getAllProductFromPage(Document doc,String productType) {
 		List<Product> productList = new ArrayList<Product>();
 		String[] string = new String[2];
+		//new phone
 		Phone newPhone;
-
+		//retailer emag
+		Retailer retailer=new Retailer();
+		retailer=this.retailerRepository.findRetailerByName("Emag");
+		//retailer-phone intermediate table
+		PhoneRetailer phoneRetailer;
+		
 		Elements phonePageContainers = doc.getElementsByClass("product-holder-grid");
 		for (Element productHolder : phonePageContainers) {
 
 			newPhone = new Phone();
+			phoneRetailer=new PhoneRetailer();
+			//new phone attributes set
 			newPhone.setImage(this.getProductImage(productHolder));
 			newPhone.setTitle(this.getProductTitle(productHolder,productType));
 			newPhone.setRating(this.getProductRating(productHolder));
 			newPhone.setReviews(this.getProductReview(productHolder));
-
+			
+			//new phone-retailer attributes set
 			string = this.getProductPriceAndCurrency(productHolder);
-			newPhone.setPrice(Double.parseDouble(string[0].split(" ")[0]));
-			
+			phoneRetailer.setPrice(Double.parseDouble(string[0].split(" ")[0]));
 			if (string[1].equals("Lei"))
-				newPhone.setMoneyCurrency(MoneyCurrency.Lei);
+				phoneRetailer.setMoneyCurrency(MoneyCurrency.Lei);
 			if (string[1].equals("Euros"))
-				newPhone.setMoneyCurrency(MoneyCurrency.Euros);
+				phoneRetailer.setMoneyCurrency(MoneyCurrency.Euros);
 			if (string[1].equals("Dollars"))
-				newPhone.setMoneyCurrency(MoneyCurrency.Dollars);
+				phoneRetailer.setMoneyCurrency(MoneyCurrency.Dollars);
 			
-			newPhone.setStock(this.getProductStokState(productHolder));
+			phoneRetailer.setStock(this.getProductStokState(productHolder));
+			phoneRetailer.setLastDateCheck(new Date());
+			phoneRetailer.setPhone(newPhone);
+			phoneRetailer.setRetailer(retailer);
+			this.phoneRetailerRepository.save(phoneRetailer);
 			
+			//new phone added
 			productList.add(newPhone);
+		
 		}
 		return productList;
 	}
