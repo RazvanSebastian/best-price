@@ -103,7 +103,6 @@ public class EmagInspectorService implements ProductInspectorService {
 			Element el = iteretor.next();
 			moneyInteger = el.getElementsByClass("money-int").text();
 			moneyDecimal = el.getElementsByClass("money-decimal").text();
-			System.out.println(moneyDecimal);
 			if(moneyDecimal.length()>=2)
 				moneyDecimal = new BigDecimal(moneyDecimal).toPlainString().substring(0, 1);
 			else

@@ -38,7 +38,18 @@ public class Phone extends Product {
 	@OneToMany(mappedBy = "phone")
 	private Set<PhoneRetailer> phoneRetailer = new HashSet<PhoneRetailer>();
 
+	@OneToMany(mappedBy = "phone")
+	private Set<UserPhone> userPhone = new HashSet<UserPhone>();
+
 	public Phone() {
+	}
+
+	public Set<UserPhone> getUserPhone() {
+		return userPhone;
+	}
+
+	public void setUserPhone(Set<UserPhone> userPhone) {
+		this.userPhone = userPhone;
 	}
 
 	public String getTitle() {

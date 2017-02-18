@@ -29,6 +29,10 @@ public class Laptop extends Product{
 	@OneToMany(mappedBy = "laptop")
 	private Set<LaptopRetailer> laptopRetailer = new HashSet<LaptopRetailer>();
 
+	@OneToMany(mappedBy = "laptop")
+	private Set<UserLaptop> userLaptop = new HashSet<UserLaptop>();
+
+	
 	public Laptop() {
 	}
 
@@ -86,5 +90,15 @@ public class Laptop extends Product{
 	public void setLaptopRetailer(Set<LaptopRetailer> laptopRetailer) {
 		this.laptopRetailer = laptopRetailer;
 	}
+
+	public Set<UserLaptop> getUserLaptop() {
+		return userLaptop;
+	}
+
+	public void setUserLaptop(Set<UserLaptop> userLaptop) {
+		this.userLaptop = userLaptop;
+	}
+	
+	
 	
 }
