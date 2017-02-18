@@ -53,10 +53,10 @@ public class User implements UserDetails {
 	@OneToMany(cascade = CascadeType.ALL, mappedBy = "user", fetch = FetchType.EAGER, orphanRemoval = true)
 	private Set<UserAuthority> authorities;
 	
-	@OneToMany(cascade = CascadeType.ALL , mappedBy="user")
+	@OneToMany( mappedBy="user")
 	private Set<UserPhone> userPhones;
 	
-	@OneToMany(cascade = CascadeType.ALL , mappedBy="user")
+	@OneToMany( mappedBy="user")
 	private Set<UserLaptop> userLaptop;
 
 	public User() {
@@ -100,7 +100,6 @@ public class User implements UserDetails {
 	}
 	
 	
-	
 	public Set<UserLaptop> getUserLaptop() {
 		return userLaptop;
 	}
@@ -108,7 +107,8 @@ public class User implements UserDetails {
 	public void setUserLaptop(Set<UserLaptop> userLaptop) {
 		this.userLaptop = userLaptop;
 	}
-
+	
+	
 	public Set<UserPhone> getUserPhones() {
 		return userPhones;
 	}

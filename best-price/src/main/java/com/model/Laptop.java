@@ -5,6 +5,8 @@ import java.util.Set;
 
 import javax.persistence.*;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 @Entity
 @Table(name = "Laptop")
 public class Laptop extends Product{
@@ -26,10 +28,10 @@ public class Laptop extends Product{
 	@Column(name = "laptop_reviews")
 	private int reviews;
 	
-	@OneToMany(mappedBy = "laptop")
+	@OneToMany(mappedBy = "laptop",  fetch = FetchType.LAZY,cascade = CascadeType.ALL)
 	private Set<LaptopRetailer> laptopRetailer = new HashSet<LaptopRetailer>();
 
-	@OneToMany(mappedBy = "laptop")
+	@OneToMany(mappedBy = "laptop", fetch = FetchType.LAZY,cascade = CascadeType.ALL)
 	private Set<UserLaptop> userLaptop = new HashSet<UserLaptop>();
 
 	

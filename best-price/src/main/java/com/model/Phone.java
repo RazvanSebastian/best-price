@@ -3,16 +3,22 @@ package com.model;
 import java.util.HashSet;
 import java.util.Set;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
+import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
+import javax.persistence.Transient;
 import javax.validation.constraints.NotNull;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 @Entity
 @Table(name = "Phone")
@@ -35,15 +41,15 @@ public class Phone extends Product {
 	@Column(name = "phone_reviews")
 	private int reviews;
 
-	@OneToMany(mappedBy = "phone")
+	@OneToMany(mappedBy = "phone" )
 	private Set<PhoneRetailer> phoneRetailer = new HashSet<PhoneRetailer>();
 
-	@OneToMany(mappedBy = "phone")
+	@OneToMany(mappedBy = "phone" ,cascade = CascadeType.ALL,fetch = FetchType.LAZY)
 	private Set<UserPhone> userPhone = new HashSet<UserPhone>();
 
 	public Phone() {
 	}
-
+	
 	public Set<UserPhone> getUserPhone() {
 		return userPhone;
 	}
@@ -98,7 +104,7 @@ public class Phone extends Product {
 		return title;
 
 	}
-
+	
 	public Set<PhoneRetailer> getPhoneRetailer() {
 		return phoneRetailer;
 	}

@@ -89,6 +89,33 @@ public class EmagInspectorService implements ProductInspectorService {
 		Element a=productHolder.getElementsByClass("middle-container").first().getElementsByAttribute("href").first();
 		return "http://www.emag.ro"+a.attr("href");
 	}
+	
+	private String priceElementHandler(String moneyInteger, String moneyDecimal){
+		String productPrice="";
+		
+		if(moneyDecimal.length()>=2)
+			moneyDecimal = new BigDecimal(moneyDecimal).toPlainString().substring(0, 1);
+		else
+			moneyDecimal="0";
+		
+		if (moneyInteger.length() <= 3)
+			productPrice = moneyInteger + "." + moneyDecimal;
+		if (moneyInteger.length() > 3 && moneyInteger.length() <= 7) {
+			String[] price = moneyInteger.split(Pattern.quote("."));
+			String hundredths = price[0];
+			String dozens = price[1];
+			productPrice = hundredths + "" + dozens + "." + moneyDecimal;
+		}
+		if (moneyInteger.length() > 7) {
+			String[] price = moneyInteger.split(Pattern.quote("."));
+			String thousands = price[0];
+			String hundredths = price[1];
+			String dozens = price[2];
+			productPrice = thousands + "" + hundredths + "" + dozens + "." + moneyDecimal;
+		}
+		return productPrice;
+		
+	}
 
 	/**
 	 * @Input Element productHolder (generic name of div which contain all details about product)
@@ -103,26 +130,7 @@ public class EmagInspectorService implements ProductInspectorService {
 			Element el = iteretor.next();
 			moneyInteger = el.getElementsByClass("money-int").text();
 			moneyDecimal = el.getElementsByClass("money-decimal").text();
-			if(moneyDecimal.length()>=2)
-				moneyDecimal = new BigDecimal(moneyDecimal).toPlainString().substring(0, 1);
-			else
-				moneyDecimal="0";
-			if (moneyInteger.length() <= 3)
-				productPriceCurrency[0] = moneyInteger + "." + moneyDecimal;
-			if (moneyInteger.length() > 3 && moneyInteger.length() <= 7) {
-				String[] price = moneyInteger.split(Pattern.quote("."));
-				String hundredths = price[0];
-				String dozens = price[1];
-				productPriceCurrency[0] = hundredths + "" + dozens + "." + moneyDecimal;
-			}
-			if (moneyInteger.length() > 7) {
-				String[] price = moneyInteger.split(Pattern.quote("."));
-				String thousands = price[0];
-				String hundredths = price[1];
-				String dozens = price[2];
-				productPriceCurrency[0] = thousands + "" + hundredths + "" + dozens + "." + moneyDecimal;
-
-			}
+			productPriceCurrency[0] = this.priceElementHandler(moneyInteger, moneyDecimal);
 			productPriceCurrency[1] = el.getElementsByClass("money-currency").text();
 		}
 
@@ -292,5 +300,15 @@ public class EmagInspectorService implements ProductInspectorService {
 		for (Product prod : products)
 			laptops.add((Laptop) prod);
 		this.laptopRepository.save(laptops);
+	}
+	
+	@Transactional
+	public double inspectPhonePriceByUrl(String urlPhonePage){
+		Document doc=this.receivePageByUrl(urlPhonePage);
+		Element priceElements=doc.getElementsByClass("product-new-price").first();
+		String[] priceAndCurrency = priceElements.text().split(" ");
+		String integer=priceAndCurrency[0].substring(0, priceAndCurrency[0].length()-2);
+		String decimal=priceAndCurrency[0].substring(priceAndCurrency[0].length()-2);
+		return Double.parseDouble(this.priceElementHandler(integer, decimal));
 	}
 }

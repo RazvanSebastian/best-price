@@ -32,6 +32,10 @@ public class UserPhone {
 		this.user = user;
 	}
 
+	public UserPhone() {
+		// TODO Auto-generated constructor stub
+	}
+
 	public int getIdUserPhone() {
 		return idUserPhone;
 	}
