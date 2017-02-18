@@ -2,25 +2,16 @@ package com.model;
 
 import java.util.Date;
 
-
-import javax.persistence.CascadeType;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
-import javax.persistence.Table;
+import javax.persistence.*;
 
 import com.model.Product.MoneyCurrency;
 import com.model.Product.Stock;
 
+
 @Entity
-@Table(name = "phone_retailer")
-public class PhoneRetailer {
+@Table(name="laptop_retailer")
+public class LaptopRetailer {
+	
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.AUTO)
@@ -28,28 +19,20 @@ public class PhoneRetailer {
 
 	// column association
 	@ManyToOne(cascade = CascadeType.ALL)
-	@JoinColumn(name = "phone_id")
-	private Phone phone;
+	@JoinColumn(name = "laptop_id")
+	private Laptop laptop;
 
 	@ManyToOne(cascade = CascadeType.ALL)
 	@JoinColumn(name = "retailer_id")
 	private Retailer retailer;
 
 	// extra column
-	@Column(name = "phone_price")
-	private double price;
-	
 	@Column(name = "retailer_offer_url")
 	private String retailerOfferUrl;
-
-	public String getRetailerOfferUrl() {
-		return retailerOfferUrl;
-	}
-
-	public void setRetailerOfferUrl(String retailerOfferUrl) {
-		this.retailerOfferUrl = retailerOfferUrl;
-	}
-
+	
+	@Column(name = "laptop_price")
+	private double price;
+	
 	@Enumerated(EnumType.STRING)
 	@Column(name = "currency")
 	private MoneyCurrency moneyCurrency;
@@ -61,32 +44,20 @@ public class PhoneRetailer {
 	@Column(name = "last_date_price_check")
 	private Date lastDateCheck;
 	
-	public PhoneRetailer(){
-		
-	}
 
-	public PhoneRetailer(Phone phone, Retailer retailer, double price, Date lastDateCheck) {
+	public LaptopRetailer(Laptop laptop, Retailer retailer, double price, MoneyCurrency moneyCurrency, Stock stock,
+			Date lastDateCheck) {
 		super();
-		this.phone = phone;
+		this.laptop = laptop;
 		this.retailer = retailer;
 		this.price = price;
+		this.moneyCurrency = moneyCurrency;
+		this.stock = stock;
 		this.lastDateCheck = lastDateCheck;
 	}
 
-	public MoneyCurrency getMoneyCurrency() {
-		return moneyCurrency;
-	}
-
-	public void setMoneyCurrency(MoneyCurrency moneyCurrency) {
-		this.moneyCurrency = moneyCurrency;
-	}
-
-	public Stock getStock() {
-		return stock;
-	}
-
-	public void setStock(Stock stock) {
-		this.stock = stock;
+	public LaptopRetailer() {
+		// TODO Auto-generated constructor stub
 	}
 
 	public int getIdPhoneRetailer() {
@@ -97,12 +68,12 @@ public class PhoneRetailer {
 		this.idPhoneRetailer = idPhoneRetailer;
 	}
 
-	public Phone getPhone() {
-		return phone;
+	public Laptop getLaptop() {
+		return laptop;
 	}
 
-	public void setPhone(Phone phone) {
-		this.phone = phone;
+	public void setLaptop(Laptop laptop) {
+		this.laptop = laptop;
 	}
 
 	public Retailer getRetailer() {
@@ -121,6 +92,22 @@ public class PhoneRetailer {
 		this.price = price;
 	}
 
+	public MoneyCurrency getMoneyCurrency() {
+		return moneyCurrency;
+	}
+
+	public void setMoneyCurrency(MoneyCurrency moneyCurrency) {
+		this.moneyCurrency = moneyCurrency;
+	}
+
+	public Stock getStock() {
+		return stock;
+	}
+
+	public void setStock(Stock stock) {
+		this.stock = stock;
+	}
+
 	public Date getLastDateCheck() {
 		return lastDateCheck;
 	}
@@ -128,4 +115,14 @@ public class PhoneRetailer {
 	public void setLastDateCheck(Date lastDateCheck) {
 		this.lastDateCheck = lastDateCheck;
 	}
+
+	public String getRetailerOfferUrl() {
+		return retailerOfferUrl;
+	}
+
+	public void setRetailerOfferUrl(String retailerOfferUrl) {
+		this.retailerOfferUrl = retailerOfferUrl;
+	}
+	
+	
 }

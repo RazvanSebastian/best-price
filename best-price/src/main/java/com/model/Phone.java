@@ -29,7 +29,7 @@ public class Phone extends Product {
 	@Column(name = "phone_image")
 	private String image;
 
-	@Column(name = "rating")
+	@Column(name = "phone_rating")
 	private double rating;
 
 	@Column(name = "phone_reviews")

@@ -14,6 +14,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.scheduling.annotation.EnableScheduling;
 
+import com.repository.LaptopRepository;
 import com.repository.PhoneRepository;
 import com.repository.RetailerRepository;
 import com.service.ProductInspectorService;
@@ -40,6 +41,8 @@ public class BestPrice
 			@Autowired
 			private PhoneRepository phoneRepository;
 			@Autowired
+			private LaptopRepository laptopRepository;
+			@Autowired
 			private RetailerRepository retailerRepository;
 			
 			@Override
@@ -47,7 +50,9 @@ public class BestPrice
 				if(this.retailerRepository.count() == 0)
 					this.retailerService.initializeRetailers();
 				if (this.phoneRepository.count() == 0) 
-					this.inspectorService.initializePhoneTable();					
+					this.inspectorService.initializePhoneTable();	
+				if(this.laptopRepository.count() == 0)
+					this.inspectorService.initializeLaptopTable();
 			}
 		};
 	}

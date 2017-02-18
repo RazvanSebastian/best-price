@@ -35,6 +35,9 @@ public class Retailer {
 	
 	@OneToMany(mappedBy = "retailer")
 	private Set<PhoneRetailer> phoneRetailer = new HashSet<PhoneRetailer>();
+	
+	@OneToMany(mappedBy = "retailer")
+	private Set<LaptopRetailer> laptopRetailer = new HashSet<LaptopRetailer>();
 
 	public Retailer() {
 		super();
@@ -86,8 +89,12 @@ public class Retailer {
 	public void setPhoneRetailer(Set<PhoneRetailer> phoneRetailer) {
 		this.phoneRetailer = phoneRetailer;
 	}
-	
 
-	
-	
+	public Set<LaptopRetailer> getLaptopRetailer() {
+		return laptopRetailer;
+	}
+
+	public void setLaptopRetailer(Set<LaptopRetailer> laptopRetailer) {
+		this.laptopRetailer = laptopRetailer;
+	}
 }
