@@ -2,13 +2,11 @@ package com.model;
 
 import java.util.Date;
 
-
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
-import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -39,7 +37,7 @@ public class PhoneRetailer {
 	// extra column
 	@Column(name = "phone_price")
 	private double price;
-	
+
 	@Column(name = "retailer_offer_url")
 	private String retailerOfferUrl;
 
@@ -61,9 +59,9 @@ public class PhoneRetailer {
 
 	@Column(name = "last_date_price_check")
 	private Date lastDateCheck;
-	
-	public PhoneRetailer(){
-		
+
+	public PhoneRetailer() {
+
 	}
 
 	public PhoneRetailer(Phone phone, Retailer retailer, double price, Date lastDateCheck) {

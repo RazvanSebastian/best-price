@@ -7,11 +7,9 @@ import javax.persistence.*;
 import com.model.Product.MoneyCurrency;
 import com.model.Product.Stock;
 
-
 @Entity
-@Table(name="laptop_retailer")
+@Table(name = "laptop_retailer")
 public class LaptopRetailer {
-	
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.AUTO)
@@ -29,10 +27,10 @@ public class LaptopRetailer {
 	// extra column
 	@Column(name = "retailer_offer_url")
 	private String retailerOfferUrl;
-	
+
 	@Column(name = "laptop_price")
 	private double price;
-	
+
 	@Enumerated(EnumType.STRING)
 	@Column(name = "currency")
 	private MoneyCurrency moneyCurrency;
@@ -43,7 +41,6 @@ public class LaptopRetailer {
 
 	@Column(name = "last_date_price_check")
 	private Date lastDateCheck;
-	
 
 	public LaptopRetailer(Laptop laptop, Retailer retailer, double price, MoneyCurrency moneyCurrency, Stock stock,
 			Date lastDateCheck) {
@@ -123,6 +120,5 @@ public class LaptopRetailer {
 	public void setRetailerOfferUrl(String retailerOfferUrl) {
 		this.retailerOfferUrl = retailerOfferUrl;
 	}
-	
-	
+
 }

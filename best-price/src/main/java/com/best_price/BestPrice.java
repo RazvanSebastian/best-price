@@ -1,15 +1,8 @@
 package com.best_price;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import javax.transaction.Transactional;
-
 import org.springframework.beans.factory.InitializingBean;
 
-
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.orm.jpa.EntityScan;
@@ -19,36 +12,35 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.scheduling.annotation.EnableScheduling;
 
-import com.model.Phone;
-import com.model.User;
-import com.model.UserPhone;
 import com.repository.LaptopRepository;
 import com.repository.PhoneRepository;
 import com.repository.RetailerRepository;
 import com.repository.UserPhoneRepository;
-import com.repository.UserRepository;
-import com.service.ProductInspectorService;
+import com.service.LaptopService;
+import com.service.PhoneService;
 import com.service.RetailerService;
+import com.service.UserPhoneService;
 
 @Configuration
 @EnableAutoConfiguration
-@EntityScan(basePackages ={ "com.model"})
-@ComponentScan(basePackages = { "com.service" , "com.security" , "com.restApi"})
-@EnableJpaRepositories(basePackages={"com.repository"})
+@EntityScan(basePackages = { "com.model" })
+@ComponentScan(basePackages = { "com.service", "com.security", "com.restApi", "com.jsoup.service" })
+@EnableJpaRepositories(basePackages = { "com.repository" })
 @EnableScheduling
-public class BestPrice 
-{
-	
+public class BestPrice {
+
 	@Bean
-	@Transactional
-	public InitializingBean insertProducts() {
+	public InitializingBean initTables() {
 		return new InitializingBean() {
 			@Autowired
-			@Qualifier("emagInspector")
-			private ProductInspectorService inspectorService;
+			private PhoneService phoneService;
+			@Autowired
+			private LaptopService laptopService;
 			@Autowired
 			private RetailerService retailerService;
-			
+			@Autowired
+			private UserPhoneService userPhoneService;
+
 			@Autowired
 			private PhoneRepository phoneRepository;
 			@Autowired
@@ -57,41 +49,24 @@ public class BestPrice
 			private RetailerRepository retailerRepository;
 			@Autowired
 			private UserPhoneRepository userPhoneRepository;
-			@Autowired
-			private UserRepository userRepository;
-			
+
 			@Override
 			public void afterPropertiesSet() {
-				if(this.retailerRepository.count() == 0)
+				if (this.retailerRepository.count() == 0)
 					this.retailerService.initializeRetailers();
-				if (this.phoneRepository.count() == 0) 
-					this.inspectorService.initializePhoneTable();	
-				if(this.laptopRepository.count() == 0)
-					this.inspectorService.initializeLaptopTable();
-				if(this.userPhoneRepository.count() == 0){
-					List<Phone> phones=new ArrayList<>();
-					phones.addAll(this.phoneRepository.findAll());
-					User user = this.userRepository.findByEmail("rzvs95@gmail.com");
-					UserPhone userPhone;
-					for(Phone phone: phones){
-						System.out.println(phone.getIdPhone());
-						System.out.println(user.getEmail());
-						userPhone = new UserPhone();
-						userPhone.setPhone(phone);
-						userPhone.setUser(user);
-						userPhone.setIdUserPhone(1);
-						this.userPhoneRepository.save(userPhone);
-					System.out.println(phone.getTitle());
-					}
-				}
+				if (this.phoneRepository.count() == 0)
+					this.phoneService.initializePhoneTable();
+				if (this.laptopRepository.count() == 0)
+					this.laptopService.initializeLaptopTable();
+				if (this.userPhoneRepository.count() == 0)
+					this.userPhoneService.initUserPhoneTable();
+
 			}
 		};
 	}
-	
+
 	public static void main(String[] args) throws Exception {
-        SpringApplication.run(BestPrice.class, args);
-    }
-	
-	
-	
+		SpringApplication.run(BestPrice.class, args);
+	}
+
 }

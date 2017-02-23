@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 
 import com.model.Phone;
 import com.model.Product.MoneyCurrency;
+import com.model.Retailer;
 
 
 @Service
@@ -29,7 +30,7 @@ public class EmailService{
 		mailSender.send(message);
 	}
 	
-	public void sendEmailPhonePriceChange(String userEmail,Phone phone,double newPrice,MoneyCurrency currency,String urlPhone){
+	public void sendEmailPhonePriceChange(String userEmail,Phone phone,Retailer retailer, double newPrice,MoneyCurrency currency,String urlPhone){
 		ApplicationContext context =
 	             new ClassPathXmlApplicationContext("Spring-Mail.xml");
 
@@ -38,9 +39,10 @@ public class EmailService{
 	    		   userEmail,
 	    		   "New price!!!",
 	    		   "There is a new price for the phone "+phone.getTitle()
-	    		   +"/n/n The new price is "+newPrice+" "+currency 
-	    		   +"/n/n If you need more details about product you can check next url "
-	    		   +"/n/n "+urlPhone);
+	    		   +" selled by "+retailer.getRetailerName()
+	    		   +"\n The new price is "+newPrice+" "+currency 
+	    		   +'\n'+" If you need more details about product you can check next url "
+	    		   +'\n'+urlPhone);
 
 	    
 	}

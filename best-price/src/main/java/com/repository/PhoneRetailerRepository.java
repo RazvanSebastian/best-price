@@ -15,8 +15,8 @@ import com.model.Retailer;
 @Transactional()
 public interface PhoneRetailerRepository extends JpaRepository<PhoneRetailer, Long> {
 
-	@Query("SELECT phone_retailer FROM PhoneRetailer phone_retailer WHERE phone_retailer.retailer=:retailer AND phone_retailer.phone IN :phone_list")
-	List<PhoneRetailer> findAllPhonesRetailerByList(@Param("retailer") Retailer retailer,@Param("phone_list") List<Phone> phoneList);
+	@Query("SELECT phone_retailer FROM PhoneRetailer phone_retailer WHERE phone_retailer.phone IN :phone_list")
+	List<PhoneRetailer> findAllPhonesRetailerByPhoneList(@Param("phone_list") List<Phone> phoneList);
 	
 	@Transactional
 	@Modifying

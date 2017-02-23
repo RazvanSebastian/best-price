@@ -7,11 +7,6 @@ import org.springframework.security.core.GrantedAuthority;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import javax.persistence.*;
-import javax.validation.constraints.NotNull;
-
-import org.springframework.security.core.GrantedAuthority;
-
-import com.fasterxml.jackson.annotation.JsonIgnore;
 
 @Entity
 @IdClass(UserAuthority.class)

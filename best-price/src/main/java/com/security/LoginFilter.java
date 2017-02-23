@@ -14,8 +14,6 @@ import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.authentication.AbstractAuthenticationProcessingFilter;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
-import org.springframework.web.bind.annotation.CrossOrigin;
-
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.model.User;
 import com.service.TokenAuthenticationService;
@@ -25,10 +23,11 @@ class LoginFilter extends AbstractAuthenticationProcessingFilter {
 
 	private final TokenAuthenticationService tokenAuthenticationService;
 	private final UserService userDetailsService;
-	
+
 	/*
-	 * Creating a filter object containing URL , token , user details from service and authManager
-	 * */
+	 * Creating a filter object containing URL , token , user details from
+	 * service and authManager
+	 */
 	protected LoginFilter(String urlMapping, TokenAuthenticationService tokenAuthenticationService,
 			UserService userDetailsService, AuthenticationManager authManager) {
 		super(new AntPathRequestMatcher(urlMapping));
@@ -44,20 +43,22 @@ class LoginFilter extends AbstractAuthenticationProcessingFilter {
 		response.setHeader("Access-Control-Allow-Origin", "*");
 
 		response.setHeader("Access-Control-Expose-Headers", "Content-Type, User-Details, Cookies");
-		
-		//from request we are receiving stream data parse to User class
+
+		// from request we are receiving stream data parse to User class
 		final User user = new ObjectMapper().readValue(request.getInputStream(), User.class);
-		//creating an object of (see next row)
+		// creating an object of (see next row)
 		final UsernamePasswordAuthenticationToken loginToken = new UsernamePasswordAuthenticationToken(
 				user.getUsername(), user.getPassword());
-		//if the auth is success will return some details about user (granted roles) using login token which contain user and password
+		// if the auth is success will return some details about user (granted
+		// roles) using login token which contain user and password
 		return getAuthenticationManager().authenticate(loginToken);
 	}
 
 	@Override
-	protected void successfulAuthentication(HttpServletRequest request, HttpServletResponse response,
-			FilterChain chain, Authentication authentication) throws IOException, ServletException {
-		// Lookup the complete User object from the database and create an Authentication for it
+	protected void successfulAuthentication(HttpServletRequest request, HttpServletResponse response, FilterChain chain,
+			Authentication authentication) throws IOException, ServletException {
+		// Lookup the complete User object from the database and create an
+		// Authentication for it
 		final User authenticatedUser = (User) userDetailsService.loadUserByUsername(authentication.getName());
 		final UserAuthentication userAuthentication = new UserAuthentication(authenticatedUser);
 

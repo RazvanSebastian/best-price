@@ -2,17 +2,14 @@ package com.security;
 
 import org.springframework.beans.factory.InitializingBean;
 
+
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.web.filter.CharacterEncodingFilter;
-
-import java.util.ArrayList;
-import java.util.List;
 
 import javax.servlet.Filter;
 
@@ -46,7 +43,7 @@ public class AuthenticationMock {
 			
 				user.setPassword(new BCryptPasswordEncoder().encode(password));
 				if(username.equals("admin")){
-					user.setEmail("admin");
+					user.setEmail("rzvs95@gmail.com");
 					user.grantRole(UserRole.ADMIN);
 					user.grantRole(UserRole.USER);
 					user.setFirstName("Razvan");

@@ -1,7 +1,7 @@
-package com.service;
+package com.jsoup.service;
 
 import java.io.IOException;
-import java.math.BigDecimal;
+
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.Iterator;
@@ -14,8 +14,6 @@ import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
 import com.model.Laptop;
 import com.model.LaptopRetailer;
 import com.model.Phone;
@@ -24,22 +22,16 @@ import com.model.Product;
 import com.model.Product.MoneyCurrency;
 import com.model.Product.Stock;
 import com.model.Retailer;
-import com.repository.LaptopRepository;
 import com.repository.LaptopRetailerRepository;
-import com.repository.PhoneRepository;
 import com.repository.PhoneRetailerRepository;
 import com.repository.RetailerRepository;
 
 @Service("emagInspector")
 public class EmagInspectorService implements ProductInspectorService {
 	@Autowired
-	private PhoneRepository phoneRepository;
-	@Autowired
 	private RetailerRepository retailerRepository;
 	@Autowired
 	private PhoneRetailerRepository phoneRetailerRepository;
-	@Autowired
-	private LaptopRepository laptopRepository;
 	@Autowired
 	private LaptopRetailerRepository laptopRetailerRepository;
 
@@ -90,28 +82,22 @@ public class EmagInspectorService implements ProductInspectorService {
 		return "http://www.emag.ro"+a.attr("href");
 	}
 	
-	private String priceElementHandler(String moneyInteger, String moneyDecimal){
-		String productPrice="";
-		
-		if(moneyDecimal.length()>=2)
-			moneyDecimal = new BigDecimal(moneyDecimal).toPlainString().substring(0, 1);
-		else
-			moneyDecimal="0";
-		
+	private String priceElementHandler(String moneyInteger){
+		String productPrice="";		
 		if (moneyInteger.length() <= 3)
-			productPrice = moneyInteger + "." + moneyDecimal;
+			productPrice = moneyInteger;
 		if (moneyInteger.length() > 3 && moneyInteger.length() <= 7) {
 			String[] price = moneyInteger.split(Pattern.quote("."));
 			String hundredths = price[0];
 			String dozens = price[1];
-			productPrice = hundredths + "" + dozens + "." + moneyDecimal;
+			productPrice = hundredths + "" + dozens;
 		}
 		if (moneyInteger.length() > 7) {
 			String[] price = moneyInteger.split(Pattern.quote("."));
 			String thousands = price[0];
 			String hundredths = price[1];
 			String dozens = price[2];
-			productPrice = thousands + "" + hundredths + "" + dozens + "." + moneyDecimal;
+			productPrice = thousands + "" + hundredths + "" + dozens ;
 		}
 		return productPrice;
 		
@@ -124,13 +110,12 @@ public class EmagInspectorService implements ProductInspectorService {
 	private String[] getProductPriceAndCurrency(Element productHolder) {
 		String[] productPriceCurrency = new String[2];
 		Iterator<Element> iteretor = productHolder.getElementsByClass("price-over").iterator();
-		String moneyDecimal;
 		String moneyInteger;
 		if (iteretor.hasNext()) {
 			Element el = iteretor.next();
 			moneyInteger = el.getElementsByClass("money-int").text();
-			moneyDecimal = el.getElementsByClass("money-decimal").text();
-			productPriceCurrency[0] = this.priceElementHandler(moneyInteger, moneyDecimal);
+			el.getElementsByClass("money-decimal").text();
+			productPriceCurrency[0] = this.priceElementHandler(moneyInteger);
 			productPriceCurrency[1] = el.getElementsByClass("money-currency").text();
 		}
 
@@ -217,22 +202,14 @@ public class EmagInspectorService implements ProductInspectorService {
 	 */
 	private List<Product> getAllProductFromPage(Document doc, String productType) {
 		List<Product> productList = new ArrayList<Product>();
-		String[] string = new String[2];
-
 		// retailer emag
 		Retailer retailer = new Retailer();
 		retailer = this.retailerRepository.findRetailerByName("Emag");
 
 		// new phone
 		Phone newPhone;
-		// retailer-phone intermediate table
-		PhoneRetailer phoneRetailer;
-
 		// new laptop
 		Laptop newLaptop;
-		// retailer-laptop
-		LaptopRetailer laptopRetailer;
-
 		Elements phonePageContainers = doc.getElementsByClass("product-holder-grid");
 		if (productType.equals("phone")) {
 			for (Element productHolder : phonePageContainers) {
@@ -271,9 +248,13 @@ public class EmagInspectorService implements ProductInspectorService {
 		}
 		return 0;
 	}
+	
+	//---------------------------------------------------------------------
+	//--------------PUBLIC METHODS----------------------------------------
+	//--------------------------------------------------------------------
+	
 
-	@Transactional
-	public void initializePhoneTable() {
+	public List<Phone> getAllEmagPhones() {
 		int pageNumbers = this.getPageNumbers("http://www.emag.ro/telefoane-mobile/p1/c");
 		List<Phone> phones = new ArrayList<Phone>();
 		List<Product> products = new ArrayList<Product>();
@@ -284,11 +265,10 @@ public class EmagInspectorService implements ProductInspectorService {
 
 		for (Product prod : products)
 			phones.add((Phone) prod);
-		this.phoneRepository.save(phones);
+		return phones;
 	}
 
-	@Transactional
-	public void initializeLaptopTable() {
+	public List<Laptop> getAllEmagLaptops() {
 		int pageNumbers = this.getPageNumbers("http://www.emag.ro/laptopuri/p1/c");
 		List<Product> products = new ArrayList<Product>();
 		List<Laptop> laptops = new ArrayList<Laptop>();
@@ -299,16 +279,18 @@ public class EmagInspectorService implements ProductInspectorService {
 
 		for (Product prod : products)
 			laptops.add((Laptop) prod);
-		this.laptopRepository.save(laptops);
+		return laptops;
 	}
 	
-	@Transactional
 	public double inspectPhonePriceByUrl(String urlPhonePage){
 		Document doc=this.receivePageByUrl(urlPhonePage);
 		Element priceElements=doc.getElementsByClass("product-new-price").first();
 		String[] priceAndCurrency = priceElements.text().split(" ");
-		String integer=priceAndCurrency[0].substring(0, priceAndCurrency[0].length()-2);
-		String decimal=priceAndCurrency[0].substring(priceAndCurrency[0].length()-2);
-		return Double.parseDouble(this.priceElementHandler(integer, decimal));
+		if(priceAndCurrency[0].length()>=2){
+			String integer=priceAndCurrency[0].substring(0, priceAndCurrency[0].length()-2);
+			priceAndCurrency[0].substring(priceAndCurrency[0].length()-2);
+			return Double.parseDouble(this.priceElementHandler(integer));
+		}
+		return 0;
 	}
 }

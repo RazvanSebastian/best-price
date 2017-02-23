@@ -1,15 +1,14 @@
 package com.model;
 
 import java.util.HashSet;
+
 import java.util.Set;
 
 import javax.persistence.*;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-
 @Entity
 @Table(name = "Laptop")
-public class Laptop extends Product{
+public class Laptop extends Product {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.AUTO)
@@ -27,14 +26,13 @@ public class Laptop extends Product{
 
 	@Column(name = "laptop_reviews")
 	private int reviews;
-	
-	@OneToMany(mappedBy = "laptop",  fetch = FetchType.LAZY,cascade = CascadeType.ALL)
+
+	@OneToMany(mappedBy = "laptop", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
 	private Set<LaptopRetailer> laptopRetailer = new HashSet<LaptopRetailer>();
 
-	@OneToMany(mappedBy = "laptop", fetch = FetchType.LAZY,cascade = CascadeType.ALL)
+	@OneToMany(mappedBy = "laptop", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
 	private Set<UserLaptop> userLaptop = new HashSet<UserLaptop>();
 
-	
 	public Laptop() {
 	}
 
@@ -100,7 +98,5 @@ public class Laptop extends Product{
 	public void setUserLaptop(Set<UserLaptop> userLaptop) {
 		this.userLaptop = userLaptop;
 	}
-	
-	
-	
+
 }

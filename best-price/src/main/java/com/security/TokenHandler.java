@@ -1,12 +1,11 @@
 package com.security;
 
 import java.io.ByteArrayInputStream;
+
 import java.io.IOException;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 import java.util.Arrays;
-import java.util.Date;
-
 import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
 import javax.xml.bind.DatatypeConverter;
@@ -17,10 +16,9 @@ import com.model.User;
 
 public final class TokenHandler {
 	/*
-	 * Creating the token using base 64 
-	 * and HmacSHA256 
-	 * code and after is mapped using separators
-	 * */
+	 * Creating the token using base 64 and HmacSHA256 code and after is mapped
+	 * using separators
+	 */
 
 	private static final String HMAC_ALGO = "HmacSHA256";
 	private static final String SEPARATOR = ".";
@@ -50,7 +48,7 @@ public final class TokenHandler {
 					return user;
 				}
 			} catch (IllegalArgumentException e) {
-				//log tempering attempt here
+				// log tempering attempt here
 			}
 		}
 		return null;
@@ -95,4 +93,3 @@ public final class TokenHandler {
 		return hmac.doFinal(content);
 	}
 }
-
