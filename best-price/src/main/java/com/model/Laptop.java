@@ -13,7 +13,7 @@ public class Laptop extends Product {
 	@Id
 	@GeneratedValue(strategy = GenerationType.AUTO)
 	@Column(name = "laptop_id")
-	private int idLaptop;
+	private Long idLaptop;
 
 	@Column(name = "laptop_name")
 	private String title;
@@ -32,6 +32,10 @@ public class Laptop extends Product {
 
 	@OneToMany(mappedBy = "laptop", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
 	private Set<UserLaptop> userLaptop = new HashSet<UserLaptop>();
+	
+	@ManyToOne(cascade = CascadeType.ALL)
+	@JoinColumn(name = "laptop_brand_id")
+	private LaptopBrand laptopBrand;
 
 	public Laptop() {
 	}
@@ -43,11 +47,11 @@ public class Laptop extends Product {
 		this.reviews = reviews;
 	}
 
-	public int getIdLaptop() {
+	public Long getIdLaptop() {
 		return idLaptop;
 	}
 
-	public void setIdLaptop(int idLaptop) {
+	public void setIdLaptop(Long idLaptop) {
 		this.idLaptop = idLaptop;
 	}
 
@@ -97,6 +101,14 @@ public class Laptop extends Product {
 
 	public void setUserLaptop(Set<UserLaptop> userLaptop) {
 		this.userLaptop = userLaptop;
+	}
+
+	public LaptopBrand getLaptopBrand() {
+		return laptopBrand;
+	}
+
+	public void setLaptopBrand(LaptopBrand laptopBrand) {
+		this.laptopBrand = laptopBrand;
 	}
 
 }

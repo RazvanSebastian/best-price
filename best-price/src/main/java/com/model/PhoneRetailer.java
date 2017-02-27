@@ -35,6 +35,12 @@ public class PhoneRetailer {
 	private Retailer retailer;
 
 	// extra column
+	@Column(name = "phone_rating")
+	private double rating;
+
+	@Column(name = "phone_reviews")
+	private int reviews;
+
 	@Column(name = "phone_price")
 	private double price;
 
@@ -126,5 +132,21 @@ public class PhoneRetailer {
 
 	public void setLastDateCheck(Date lastDateCheck) {
 		this.lastDateCheck = lastDateCheck;
+	}
+
+	public double getRating() {
+		return rating;
+	}
+
+	public void setRating(double rating) {
+		this.rating = rating;
+	}
+
+	public int getReviews() {
+		return reviews;
+	}
+
+	public void setReviews(int reviews) {
+		this.reviews = reviews;
 	}
 }

@@ -35,7 +35,6 @@ public class UserPhoneService {
 			userPhone = new UserPhone();
 			userPhone.setPhone(phone);
 			userPhone.setUser(user);
-			System.out.println(userPhone.getPhone()+" "+userPhone.getUser()+" "+userPhone.getIdUserPhone());
 			this.userPhoneRepository.save(userPhone);
 		}
 	}

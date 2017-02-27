@@ -4,11 +4,14 @@ import java.util.HashSet;
 
 import java.util.Set;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
@@ -19,7 +22,7 @@ public class Phone extends Product {
 	@Id
 	@GeneratedValue(strategy = GenerationType.AUTO)
 	@Column(name = "phone_id")
-	private int idPhone;
+	private Long idPhone;
 
 	@Column(name = "phone_name")
 	private String title;
@@ -27,17 +30,15 @@ public class Phone extends Product {
 	@Column(name = "phone_image")
 	private String image;
 
-	@Column(name = "phone_rating")
-	private double rating;
-
-	@Column(name = "phone_reviews")
-	private int reviews;
-
 	@OneToMany(mappedBy = "phone")
 	private Set<PhoneRetailer> phoneRetailer = new HashSet<PhoneRetailer>();
 
 	@OneToMany(mappedBy = "phone")
 	private Set<UserPhone> userPhone = new HashSet<UserPhone>();
+	
+	@ManyToOne(cascade = CascadeType.ALL)
+	@JoinColumn(name = "phone_brand_id")
+	private PhoneBrand phoneBrand;
 
 	public Phone() {
 	}
@@ -66,27 +67,11 @@ public class Phone extends Product {
 		this.image = image;
 	}
 
-	public double getRating() {
-		return rating;
-	}
-
-	public void setRating(double d) {
-		this.rating = d;
-	}
-
-	public int getReviews() {
-		return reviews;
-	}
-
-	public void setReviews(int reviews) {
-		this.reviews = reviews;
-	}
-
-	public int getIdPhone() {
+	public Long getIdPhone() {
 		return idPhone;
 	}
 
-	public void setIdPhone(int idPhone) {
+	public void setIdPhone(Long idPhone) {
 		this.idPhone = idPhone;
 	}
 
@@ -103,6 +88,14 @@ public class Phone extends Product {
 
 	public void setPhoneRetailer(Set<PhoneRetailer> phoneRetailer) {
 		this.phoneRetailer = phoneRetailer;
+	}
+
+	public PhoneBrand getPhoneBrand() {
+		return phoneBrand;
+	}
+
+	public void setPhoneBrand(PhoneBrand phoneBrand) {
+		this.phoneBrand = phoneBrand;
 	}
 
 }

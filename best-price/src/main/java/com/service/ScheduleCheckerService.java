@@ -36,7 +36,7 @@ public class ScheduleCheckerService {
 
 	
 	@Transactional
-	private void checkAllUserPhonesPrices2nd() {
+	private void checkAllUserPhonesPrices() {
 		List<PhoneRetailer> phoneRetailer=this.phoneRetailerRepository.findAllPhonesRetailerByPhoneList(this.userPhoneRepository.selectDistinctPhones());
 		for(PhoneRetailer pr:phoneRetailer){
 			if(pr.getRetailer().getRetailerName().equals("Emag")){
@@ -63,9 +63,9 @@ public class ScheduleCheckerService {
 	 * Documentation :
 	 * http://docs.spring.io/spring/docs/current/javadoc-api/org/springframework/scheduling/support/CronSequenceGenerator.html
 	 */
-	@Scheduled(cron="*/20 * * * * *")
+	@Scheduled(cron="*/30 * * * * *")
 	private void checkEmagPrices(){
-		this.checkAllUserPhonesPrices2nd();
+		this.checkAllUserPhonesPrices();
 	}
 			
 	

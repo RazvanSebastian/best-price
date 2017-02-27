@@ -12,11 +12,15 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.scheduling.annotation.EnableScheduling;
 
+import com.repository.LaptopBrandRepository;
 import com.repository.LaptopRepository;
+import com.repository.PhoneBrandRepository;
 import com.repository.PhoneRepository;
 import com.repository.RetailerRepository;
 import com.repository.UserPhoneRepository;
+import com.service.LaptopBrandService;
 import com.service.LaptopService;
+import com.service.PhoneBrandService;
 import com.service.PhoneService;
 import com.service.RetailerService;
 import com.service.UserPhoneService;
@@ -40,7 +44,13 @@ public class BestPrice {
 			private RetailerService retailerService;
 			@Autowired
 			private UserPhoneService userPhoneService;
+			@Autowired
+			private PhoneBrandService phoneBrandService;	
+			@Autowired 
+			private LaptopBrandService laptopBrandService;
 
+			@Autowired
+			private LaptopBrandRepository laptopBrandRepository;
 			@Autowired
 			private PhoneRepository phoneRepository;
 			@Autowired
@@ -49,15 +59,25 @@ public class BestPrice {
 			private RetailerRepository retailerRepository;
 			@Autowired
 			private UserPhoneRepository userPhoneRepository;
-
+			@Autowired
+			private PhoneBrandRepository phoneBrandRepository;
+			
 			@Override
 			public void afterPropertiesSet() {
+				//init brands
+				if(this.laptopBrandRepository.count()==0)
+					this.laptopBrandService.initializeLaptopBrand();
+				if(this.phoneBrandRepository.count() == 0)
+					this.phoneBrandService.initializePhoneBrand();
+				//init retailer and products
 				if (this.retailerRepository.count() == 0)
 					this.retailerService.initializeRetailers();
-				if (this.phoneRepository.count() == 0)
-					this.phoneService.initializePhoneTable();
 				if (this.laptopRepository.count() == 0)
 					this.laptopService.initializeLaptopTable();
+				if (this.phoneRepository.count() == 0)
+					this.phoneService.initializePhoneTable();
+				
+				
 				if (this.userPhoneRepository.count() == 0)
 					this.userPhoneService.initUserPhoneTable();
 
