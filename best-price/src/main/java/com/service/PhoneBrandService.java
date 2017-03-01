@@ -29,14 +29,7 @@ public class PhoneBrandService {
 		List<PhoneBrand> phoneBrands = new ArrayList<>();
 		for (BrandDao brand : this.emagInspectorService.getBrandsByProduct("phone")) {
 			newBrand = new PhoneBrand();
-			if (brand.getBrandName().split(" ").length == 2)
-				newBrand.setBrandName(brand.getBrandName().split(" ")[0] + "-" + brand.getBrandName().split(" ")[1]);
-			else {
-				if (brand.getBrandName().split("\\.").length == 2)
-					newBrand.setBrandName(brand.getBrandName().split("\\.")[0] + "-" + brand.getBrandName().split("\\.")[1]);
-				else
-					newBrand.setBrandName(brand.getBrandName());
-			}
+			newBrand.setBrandName(brand.getBrandName());
 			phoneBrands.add(newBrand);
 		}
 		this.phoneBrandRepository.save(phoneBrands);

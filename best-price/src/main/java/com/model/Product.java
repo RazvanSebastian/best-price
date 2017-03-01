@@ -9,16 +9,5 @@ public class Product {
 
 	public enum Stock {
 		InStock, LimitedStock, OutOfStock, Soon
-	}
-	
-	public MoneyCurrency convertToMoneyCurrency(String currency){
-		if (currency.equals("Lei"))
-			return MoneyCurrency.Lei;
-		if (currency.equals("Euros"))
-			return MoneyCurrency.Euros;
-		if (currency.equals("Dollars"))
-			return MoneyCurrency.Dollars;
-		return MoneyCurrency.Euros;
-	}
-	
+	}	
 }

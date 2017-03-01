@@ -23,7 +23,7 @@ public class PhoneService {
 	
 	@Transactional
 	public void initializePhoneTable(){
-		List<Phone> phones=this.emagInspectorService.getAllEmagPhones();
+		List<Phone> phones=this.emagInspectorService.getAllRetailerPhones();
 		this.phoneRepostiroy.save(phones);
 	}
 }

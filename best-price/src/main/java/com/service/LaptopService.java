@@ -20,7 +20,7 @@ public class LaptopService {
 	
 	@Transactional
 	public void initializeLaptopTable(){
-		this.laptopRepostiroy.save(this.emagInspectorService.getAllEmagLaptops());
+		this.laptopRepostiroy.save(this.emagInspectorService.getAllRetailerLaptops());
 	}
 	
 }

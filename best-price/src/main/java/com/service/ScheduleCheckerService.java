@@ -63,7 +63,7 @@ public class ScheduleCheckerService {
 	 * Documentation :
 	 * http://docs.spring.io/spring/docs/current/javadoc-api/org/springframework/scheduling/support/CronSequenceGenerator.html
 	 */
-	@Scheduled(cron="*/30 * * * * *")
+	//@Scheduled(cron="*/30 * * * * *")
 	private void checkEmagPrices(){
 		this.checkAllUserPhonesPrices();
 	}

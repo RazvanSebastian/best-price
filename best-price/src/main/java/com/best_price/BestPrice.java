@@ -65,15 +65,15 @@ public class BestPrice {
 			@Override
 			public void afterPropertiesSet() {
 				//init brands
-				if(this.laptopBrandRepository.count()==0)
-					this.laptopBrandService.initializeLaptopBrand();
+//				if(this.laptopBrandRepository.count()==0)
+//					this.laptopBrandService.initializeLaptopBrand();
 				if(this.phoneBrandRepository.count() == 0)
 					this.phoneBrandService.initializePhoneBrand();
 				//init retailer and products
 				if (this.retailerRepository.count() == 0)
 					this.retailerService.initializeRetailers();
-				if (this.laptopRepository.count() == 0)
-					this.laptopService.initializeLaptopTable();
+//				if (this.laptopRepository.count() == 0)
+//					this.laptopService.initializeLaptopTable();
 				if (this.phoneRepository.count() == 0)
 					this.phoneService.initializePhoneTable();
 				

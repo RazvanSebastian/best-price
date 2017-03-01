@@ -15,6 +15,7 @@ import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
+import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 
 import com.dao.BrandDao;
@@ -34,8 +35,8 @@ import com.repository.PhoneBrandRepository;
 import com.repository.PhoneRetailerRepository;
 import com.repository.RetailerRepository;
 
-@Service("emagInspector")
-public class EmagInspectorService implements ProductInspectorService {
+@Component("emagInspector")
+public class EmagInspectorService extends RetailerInspector {
 	@Autowired
 	private RetailerRepository retailerRepository;
 	@Autowired
@@ -47,32 +48,7 @@ public class EmagInspectorService implements ProductInspectorService {
 	@Autowired
 	private LaptopBrandRepository laptopBrandRepository;
 
-	public List<BrandDao> getBrandsByProduct(String productType) {
-		List<BrandDao> daoBrands = new ArrayList<>();
-
-		Document doc;
-		switch (productType) {
-		case "phone":
-			doc = this.receivePageByUrl("http://www.emag.ro/telefoane-mobile/c");
-			break;
-		case "laptop":
-			doc = this.receivePageByUrl("http://www.emag.ro/laptopuri/c");
-			break;
-		default:
-			doc = this.receivePageByUrl("http://www.emag.ro/telefoane-mobile/c");
-		}
-		Element brandFilterList = doc.getElementsByClass("sticky-filters").first().getElementsByClass("filters-list")
-				.get(2);
-
-		Elements liBrands = brandFilterList.getElementsByTag("li");
-		for (Element li : liBrands)
-			if (li.elementSiblingIndex() != 10 || li.elementSiblingIndex() != liBrands.size()-1)
-				daoBrands.add(new BrandDao(li.text().split("\\(")[0].replaceAll("\\u00A0", " ").trim(),
-						li.getElementsByTag("input").first().attr("data-url")));
-		return daoBrands;
-	}
-
-	private Document receivePageByUrl(String url) {
+	public Document receivePageByUrl(String url) {
 		Connection.Response response = null;
 		try {
 			response = Jsoup.connect(url).method(Connection.Method.GET).execute();
@@ -91,11 +67,11 @@ public class EmagInspectorService implements ProductInspectorService {
 		return null;
 	}
 
-	private String getProductImage(Element productHolder) {
+	public String getProductImage(Element productHolder) {
 		return productHolder.getElementsByTag("img").attr("data-src");
 	}
 
-	private String getProductTitle(Element productHolder, String productType) {
+	public String getProductTitle(Element productHolder, String productType) {
 		switch (productType) {
 		case "phone":
 			return productHolder.getElementsByClass("middle-container").text().substring(14);
@@ -105,7 +81,7 @@ public class EmagInspectorService implements ProductInspectorService {
 		return "";
 	}
 
-	private Double getProductRating(Element productHolder) {
+	public Double getProductRating(Element productHolder) {
 		String ratingString = productHolder.getElementsByClass("star-rating-small-progress").attr("style");
 		if (ratingString.length() > 0)
 			return Double.parseDouble(ratingString.substring(6, ratingString.length() - 1).toString());
@@ -113,7 +89,7 @@ public class EmagInspectorService implements ProductInspectorService {
 			return 0.0;
 	}
 
-	private int getProductReview(Element productHolder) {
+	public int getProductReview(Element productHolder) {
 		String reviewString = productHolder.getElementsByClass("holder-rating").text();
 		if (reviewString.length() > 1)
 			return Integer
@@ -122,12 +98,19 @@ public class EmagInspectorService implements ProductInspectorService {
 			return 0;
 	}
 
-	private String getRetailerUrlOfProductOffer(Element productHolder) {
+	public String getRetailerUrlOfProductOffer(Element productHolder) {
 		Element a = productHolder.getElementsByClass("middle-container").first().getElementsByAttribute("href").first();
 		return "http://www.emag.ro" + a.attr("href");
 	}
 
-	private String priceElementHandler(String moneyInteger) {
+	public String getProductPrice(Element productHolder) {
+		String moneyInteger = productHolder.getElementsByClass("price-over").first().getElementsByClass("money-int")
+				.text();
+		return moneyInteger;
+	}
+
+	public String handleProductPrice(String moneyInteger) {
+
 		String productPrice = "";
 		if (moneyInteger.length() <= 3)
 			productPrice = moneyInteger;
@@ -153,20 +136,21 @@ public class EmagInspectorService implements ProductInspectorService {
 	 *        details about product)
 	 * @Return String vector: index 0 = price , index 1 = currency
 	 */
-	private String[] getProductPriceAndCurrency(Element productHolder) {
-		String[] productPriceCurrency = new String[2];
-		Iterator<Element> iteretor = productHolder.getElementsByClass("price-over").iterator();
-		String moneyInteger;
-		if (iteretor.hasNext()) {
-			Element el = iteretor.next();
-			moneyInteger = el.getElementsByClass("money-int").text();
-			productPriceCurrency[0] = this.priceElementHandler(moneyInteger);
-			productPriceCurrency[1] = el.getElementsByClass("money-currency").text();
+
+	@Override
+	public MoneyCurrency getProductCurrency(Element productHolder) {
+		// TODO Auto-generated method stub
+		String currency = productHolder.getElementsByClass("price-over").first().getElementsByClass("money-currency")
+				.text();
+		switch (currency.toLowerCase()) {
+		case "lei":
+			return MoneyCurrency.Lei;
+		default:
+			return MoneyCurrency.Euros;
 		}
-		return productPriceCurrency;
 	}
 
-	private Stock getProductStokState(Element productHolder) {
+	public Stock getProductStokState(Element productHolder) {
 		String stockState = productHolder.getElementsByClass("stare-disp-listing").text();
 		if (stockState.equals("In stoc"))
 			return Stock.InStock;
@@ -177,7 +161,7 @@ public class EmagInspectorService implements ProductInspectorService {
 		return Stock.Soon;
 	}
 
-	private Phone setNewPhoneAttributes(Element productHolder) {
+	public Phone setNewPhoneAttributes(Element productHolder) {
 		Phone newPhone = new Phone();
 		// new phone attributes set
 		newPhone.setImage(this.getProductImage(productHolder));
@@ -185,16 +169,15 @@ public class EmagInspectorService implements ProductInspectorService {
 		return newPhone;
 	}
 
-	private PhoneRetailer setNewPhoneRetailerAttributes(Element productHolder, Phone newPhone, Retailer retailer) {
+	public PhoneRetailer setNewPhoneRetailerAttributes(Element productHolder, Phone newPhone, Retailer retailer) {
 		String[] string = new String[2];
 		PhoneRetailer phoneRetailer = new PhoneRetailer();
 		// new phone-retailer attributes set
 		phoneRetailer.setPhone(newPhone);
 		phoneRetailer.setRetailer(retailer);
 		// details
-		string = this.getProductPriceAndCurrency(productHolder);
-		phoneRetailer.setPrice(Double.parseDouble(string[0].split(" ")[0]));
-		phoneRetailer.setMoneyCurrency(new Product().convertToMoneyCurrency(string[1]));
+		phoneRetailer.setPrice(Double.parseDouble(this.handleProductPrice(this.getProductPrice(productHolder))));
+		phoneRetailer.setMoneyCurrency(this.getProductCurrency(productHolder));
 
 		phoneRetailer.setStock(this.getProductStokState(productHolder));
 		phoneRetailer.setLastDateCheck(new Date());
@@ -204,7 +187,7 @@ public class EmagInspectorService implements ProductInspectorService {
 		return phoneRetailer;
 	}
 
-	private Laptop setNewLaptopAttributes(Element productHolder) {
+	public Laptop setNewLaptopAttributes(Element productHolder) {
 		Laptop newLaptop = new Laptop();
 		// new phone attributes set
 		newLaptop.setImage(this.getProductImage(productHolder));
@@ -214,13 +197,13 @@ public class EmagInspectorService implements ProductInspectorService {
 		return newLaptop;
 	}
 
-	private LaptopRetailer setNewLaptopRetailerAttributes(Element productHolder, Laptop newLaptop, Retailer retailer) {
+	public LaptopRetailer setNewLaptopRetailerAttributes(Element productHolder, Laptop newLaptop, Retailer retailer) {
 		String[] string = new String[2];
 		LaptopRetailer laptopRetailer = new LaptopRetailer();
 		// new phone-retailer attributes set
-		string = this.getProductPriceAndCurrency(productHolder);
-		laptopRetailer.setPrice(Double.parseDouble(string[0].split(" ")[0]));
-		laptopRetailer.setMoneyCurrency(new Product().convertToMoneyCurrency(string[1]));
+
+		laptopRetailer.setPrice(Double.parseDouble(this.handleProductPrice(this.getProductPrice(productHolder))));
+		laptopRetailer.setMoneyCurrency(this.getProductCurrency(productHolder));
 		laptopRetailer.setStock(this.getProductStokState(productHolder));
 		laptopRetailer.setLastDateCheck(new Date());
 		laptopRetailer.setLaptop(newLaptop);
@@ -235,7 +218,7 @@ public class EmagInspectorService implements ProductInspectorService {
 	 *            , productType
 	 * @return List of products as generic
 	 */
-	private List<Product> getAllProductFromPage(Document doc, String productType) {
+	public List<Product> getAllProductFromPage(Document doc, String productType) {
 		List<Product> productList = new ArrayList<Product>();
 		// retailer emag
 		Retailer retailer = new Retailer();
@@ -274,16 +257,19 @@ public class EmagInspectorService implements ProductInspectorService {
 	 *            of URL specific for product
 	 * @return number of product pages with a specific product
 	 */
-	private int getnumberOfPages(String productTypePage) {
+	public int getnumberOfPages(String url) {
 		try {
-			Document doc = Jsoup.connect(productTypePage).get();
-			String text=doc.getElementsByClass("emg-pagination-box").last().text();
-			if(text.length()>1)
-				text=text.substring(text.length()-1);
-			return Integer.parseInt(text);
+			Document doc = Jsoup.connect(url).get();
+			String text = doc.getElementsByClass("emg-pagination-box").last().text();
+
+			if (!text.equals("Afisare") && text.length() > 1) {
+				text = text.substring(text.length() - 1);
+				return Integer.parseInt(text);
+			}
+
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
-			this.getnumberOfPages(productTypePage);
+			this.getnumberOfPages(url);
 			e.printStackTrace();
 		}
 		return 0;
@@ -293,50 +279,80 @@ public class EmagInspectorService implements ProductInspectorService {
 	// --------------PUBLIC METHODS----------------------------------------
 	// --------------------------------------------------------------------
 
-	public List<Phone> getAllEmagPhones() {
+	public List<BrandDao> getBrandsByProduct(String productType) {
+		List<BrandDao> daoBrands = new ArrayList<>();
+
+		Document doc;
+		switch (productType) {
+		case "phone":
+			doc = this.receivePageByUrl("http://www.emag.ro/telefoane-mobile/c");
+			break;
+		case "laptop":
+			doc = this.receivePageByUrl("http://www.emag.ro/laptopuri/c");
+			break;
+		default:
+			doc = this.receivePageByUrl("http://www.emag.ro/telefoane-mobile/c");
+		}
+		Element brandFilterList = doc.getElementsByClass("sticky-filters").first().getElementsByClass("filters-list")
+				.get(2);
+
+		Elements liBrands = brandFilterList.getElementsByTag("li");
+		for (Element li : liBrands) {
+			if (li.siblingIndex() != 10) {
+				String text = li.text().replaceAll("\\u00A0", " ").trim();
+				String title = text.split("\\(")[0];
+				if (title.split(" ").length > 1)
+					title = title.split(" ")[0] + "-" + title.split(" ")[1];
+				int numberOfProducts = Integer.parseInt(li.text().split("[\\(\\)]")[1]);
+				int numberOfPages = (numberOfProducts / 60) + (numberOfProducts % 60 == 0 ? 0 : 1);
+				String url = "http://www.emag.ro/" + li.getElementsByTag("input").first().attr("data-url");
+				daoBrands.add(new BrandDao(title, url.substring(0, url.lastIndexOf("/")), numberOfPages));
+			}
+		}
+		return daoBrands;
+	}
+
+	public List<Phone> getAllRetailerPhones() {
 		int numberOfPages;
 		List<Phone> phones = new ArrayList<Phone>();
 		List<Product> productsByBrand = null;
 		List<PhoneBrand> brands = this.phoneBrandRepository.findAll();
 		List<BrandDao> brandsDao = this.getBrandsByProduct("phone");
 		for (PhoneBrand brand : brands) {
-			numberOfPages = this.getnumberOfPages(
-					"http://www.emag.ro" + brandsDao.get(brand.getIdPhoneBrand() - 1).getUrlFirstPage());
+			System.out.println(brandsDao.get(brand.getIdPhoneBrand()-1).getUrlFirstPage());
+			numberOfPages = brandsDao.get(brand.getIdPhoneBrand() - 1).getNumberOfPages();
 			productsByBrand = new ArrayList<Product>();
-			for (int i = 1; i <= numberOfPages; i++) {
-				String url = brandsDao.get(brand.getIdPhoneBrand() - 1).getUrlFirstPage();
-				productsByBrand
-						.addAll(this.getAllProductFromPage(
-								this.receivePageByUrl(
-										"http://www.emag.ro" + url.substring(0, url.length() - 2) + "/p" + i + "/c"),
-								"phone"));
-			}
-			for (Product prod : productsByBrand) {
-				phones.add((Phone) prod);
-				phones.get(phones.size() - 1).setPhoneBrand(brand);
+			if (numberOfPages != 0) {
+				for (int i = 1; i <= numberOfPages; i++) {
+					String url = brandsDao.get(brand.getIdPhoneBrand() - 1).getUrlFirstPage();
+					productsByBrand
+							.addAll(this.getAllProductFromPage(this.receivePageByUrl(url + "/p" + i + "/c"), "phone"));
+				}
+				for (Product prod : productsByBrand) {
+					phones.add((Phone) prod);
+					phones.get(phones.size() - 1).setPhoneBrand(brand);
+				}
 			}
 		}
 		return phones;
 	}
 
-	public List<Laptop> getAllEmagLaptops() {
+	public List<Laptop> getAllRetailerLaptops() {
 		int numberOfPages;
 		List<Laptop> laptops = new ArrayList<Laptop>();
 		List<Product> productsByBrand = null;
 		List<LaptopBrand> brands = this.laptopBrandRepository.findAll();
 		List<BrandDao> brandsDao = this.getBrandsByProduct("laptop");
-		
-	
+
 		for (LaptopBrand brand : brands) {
-			numberOfPages = this
-					.getnumberOfPages("http://www.emag.ro/" + brandsDao.get(brand.getIdLaptopeBrand() - 1).getUrlFirstPage());
+			numberOfPages = this.getnumberOfPages(
+					"http://www.emag.ro/" + brandsDao.get(brand.getIdLaptopeBrand() - 1).getUrlFirstPage());
 			productsByBrand = new ArrayList<Product>();
-			
+
 			for (int i = 1; i <= numberOfPages; i++) {
 				String url = brandsDao.get(brand.getIdLaptopeBrand() - 1).getUrlFirstPage();
-				productsByBrand.addAll(this.getAllProductFromPage(
-						this.receivePageByUrl(
-								"http://www.emag.ro/laptopuri/brand/" + url.substring(0, url.length() - 2) + "/p" + i + "/c"),
+				productsByBrand.addAll(this.getAllProductFromPage(this.receivePageByUrl(
+						"http://www.emag.ro/laptopuri/brand/" + url.substring(0, url.length() - 2) + "/p" + i + "/c"),
 						"laptop"));
 			}
 			for (Product prod : productsByBrand) {
@@ -355,7 +371,7 @@ public class EmagInspectorService implements ProductInspectorService {
 		if (priceAndCurrency[0].length() >= 2) {
 			String integer = priceAndCurrency[0].substring(0, priceAndCurrency[0].length() - 2);
 			priceAndCurrency[0].substring(priceAndCurrency[0].length() - 2);
-			return Double.parseDouble(this.priceElementHandler(integer));
+			return Double.parseDouble(this.handleProductPrice(integer));
 		}
 		return 0;
 	}
