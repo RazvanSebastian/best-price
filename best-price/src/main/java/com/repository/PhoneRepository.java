@@ -14,13 +14,15 @@ public interface PhoneRepository extends JpaRepository<Phone,Long>{
 	@Query("SELECT phone FROM Phone phone WHERE phone.phoneBrand=:brand")
 	List<Phone> findPhonesByBrand(@Param("brand") PhoneBrand brand);
 	
-	@Query("SELECT COUNT(*) FROM Phone phone WHERE "
+	@Query("SELECT phone FROM Phone phone WHERE "
 			+ "LOWER(phone.title) LIKE %:atr1% AND "
 			+ "LOWER(phone.title) LIKE %:atr2% AND "
 			+ "LOWER(phone.title) LIKE %:atr3% AND "
+			+ "LOWER(phone.title) LIKE %:atrGb% AND "
 			+ "LOWER(phone.title) LIKE %:lastAtr1% AND "
-			+ "LOWER(phone.title) LIKE %:lastAtr2%")
-	int findBy5Attributes(@Param("atr1") String atr1,@Param("atr2") String atr2,@Param("atr3") String atr3,@Param("lastAtr1") String lastAtr1,@Param("lastAtr2") String lastAtr2);
+			+ "LOWER(phone.title) LIKE %:lastAtr2% AND "
+			+ "LOWER(phone.title) LIKE %:lastAtr3%")
+	List<Phone> findAllPhoneLikeAttributes(@Param("atr1") String atr1,@Param("atr2") String atr2,@Param("atr3") String atr3,@Param("atrGb") String atrGb,@Param("lastAtr1") String lastAtr1,@Param("lastAtr2") String lastAtr2,@Param("lastAtr3") String lastAtr3);
 	
 	
 }

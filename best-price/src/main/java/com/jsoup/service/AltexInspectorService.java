@@ -18,6 +18,7 @@ import org.springframework.stereotype.Service;
 
 import com.dao.BrandDao;
 import com.fasterxml.jackson.annotation.JsonUnwrapped;
+import com.local.components.PhoneAttributesHandler;
 import com.model.Laptop;
 import com.model.LaptopRetailer;
 import com.model.Phone;
@@ -31,6 +32,7 @@ import com.repository.PhoneBrandRepository;
 import com.repository.PhoneRepository;
 
 import ch.qos.logback.core.boolex.Matcher;
+import org.apache.commons.lang.StringUtils;
 
 @Component
 public class AltexInspectorService extends RetailerInspector {
@@ -39,6 +41,8 @@ public class AltexInspectorService extends RetailerInspector {
 	private PhoneRepository phoneRepository;
 	@Autowired
 	private PhoneBrandRepository phoneBrandRepository;
+	@Autowired
+	private PhoneAttributesHandler phoneAttributesHandler;
 
 	@Override
 	protected Document receivePageByUrl(String url) {
@@ -244,24 +248,30 @@ public class AltexInspectorService extends RetailerInspector {
 
 				for (Element productHolder : productHolders) {
 					String title = this.getProductTitle(productHolder, "phone").replaceAll(",", "");
-					System.out.println(title);
-					if (!title.equals("titile not known") && title.split(brand.getBrandName()).length>0) {
-						String titleWihoutName = title.split(brand.getBrandName())[1];
 
-						if (titleWihoutName.split("\\s").length >= 6) {
-							String[] atrs = titleWihoutName.split("\\s");
-							String atr1 = atrs[0].toLowerCase();
-							String atr2 = atrs[1].toLowerCase();
-							String atr3 = atrs[2].toLowerCase();
-							String lastAtr1 = atrs[atrs.length - 2].toLowerCase();
-							String lastAtr2 = atrs[atrs.length - 1].toLowerCase();
-							System.out.println(titleWihoutName + " : "
-									+ this.phoneRepository.findBy5Attributes(atr1, atr2, atr3, lastAtr1, lastAtr2));
+					if (!title.equals("titile not known")) {
+						String[] titleAux = title.split(brand.getBrandName());
+						String titleWihoutName;
+						if (titleAux.length == 2)
+							titleWihoutName = titleAux[1].replaceAll("^\\s+", "").replaceAll("\\s+$", "");
+						else
+							titleWihoutName = titleAux[0].replaceAll("^\\s+", "").replaceAll("\\s+$", "");
+
+						if (titleWihoutName.split(" ").length >= 3) {
+							List<Phone> resultList;
+							String[] attrs = this.phoneAttributesHandler.getDetailsOfTitlePhone(titleWihoutName,
+									titleWihoutName.split("\\s").length);
+							resultList = this.phoneRepository.findAllPhoneLikeAttributes(attrs[0], attrs[1], attrs[2],
+									attrs[3], attrs[4], attrs[5], attrs[6]);
+
+							Phone phone = this.phoneAttributesHandler
+									.checkResultsAndGetPhoneCorespodingToDB(resultList);
+							System.out.println(phone);
+
 						}
 					}
 				}
 			}
 		}
 	}
-
 }

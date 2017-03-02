@@ -28,7 +28,7 @@ import com.service.UserPhoneService;
 @Configuration
 @EnableAutoConfiguration
 @EntityScan(basePackages = { "com.model" })
-@ComponentScan(basePackages = { "com.service", "com.security", "com.restApi", "com.jsoup.service" })
+@ComponentScan(basePackages = { "com.service", "com.security", "com.restApi", "com.jsoup.service","com.local.components" })
 @EnableJpaRepositories(basePackages = { "com.repository" })
 @EnableScheduling
 public class BestPrice {
