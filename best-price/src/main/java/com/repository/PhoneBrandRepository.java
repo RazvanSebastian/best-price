@@ -8,5 +8,6 @@ import com.model.PhoneBrand;
 
 public interface PhoneBrandRepository extends JpaRepository<PhoneBrand,Long>{
 	
-	PhoneBrand findByBrandName(String brandName);
+	@Query("SELECT brand FROM PhoneBrand brand WHERE LOWER(brand.brandName)=LOWER(:brandName)")
+	PhoneBrand findByBrandName(@Param("brandName") String brandName);
 }

@@ -20,6 +20,11 @@ public class PhoneBrandService {
 	@Autowired
 	@Qualifier("emagInspector")
 	private ProductInspectorService emagInspectorService;
+	
+	@Autowired
+	@Qualifier("altexInspector")
+	private ProductInspectorService altexInspectorService;
+	
 	@Autowired
 	private PhoneBrandRepository phoneBrandRepository;
 

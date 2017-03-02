@@ -26,6 +26,15 @@ public class PhoneBrand {
 	@OneToMany(mappedBy = "phoneBrand")
 	private Set<Phone> phones = new HashSet<Phone>();
 
+	public PhoneBrand(String brandName) {
+		super();
+		this.brandName = brandName;
+	}
+
+	public PhoneBrand() {
+		// TODO Auto-generated constructor stub
+	}
+
 	public int getIdPhoneBrand() {
 		return idPhoneBrand;
 	}

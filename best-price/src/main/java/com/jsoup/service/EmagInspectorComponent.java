@@ -36,7 +36,7 @@ import com.repository.PhoneRetailerRepository;
 import com.repository.RetailerRepository;
 
 @Component("emagInspector")
-public class EmagInspectorService extends RetailerInspector {
+public class EmagInspectorComponent extends RetailerInspectorService {
 	@Autowired
 	private RetailerRepository retailerRepository;
 	@Autowired
@@ -60,6 +60,7 @@ public class EmagInspectorService extends RetailerInspector {
 		Document doc;
 		try {
 			doc = Jsoup.connect(url).cookies(response.cookies()).get();
+			System.out.println(url);
 			return doc;
 		} catch (IOException e) {
 			e.printStackTrace();
@@ -319,7 +320,7 @@ public class EmagInspectorService extends RetailerInspector {
 		List<PhoneBrand> brands = this.phoneBrandRepository.findAll();
 		List<BrandDao> brandsDao = this.getBrandsByProduct("phone");
 		for (PhoneBrand brand : brands) {
-			System.out.println(brandsDao.get(brand.getIdPhoneBrand()-1).getUrlFirstPage());
+			//System.out.println(brandsDao.get(brand.getIdPhoneBrand()-1).getUrlFirstPage());
 			numberOfPages = brandsDao.get(brand.getIdPhoneBrand() - 1).getNumberOfPages();
 			productsByBrand = new ArrayList<Product>();
 			if (numberOfPages != 0) {

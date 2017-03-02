@@ -27,7 +27,7 @@ import com.model.Product.MoneyCurrency;
 import com.model.Product.Stock;
 
 @Service
-public abstract class RetailerInspector implements ProductInspectorService {
+public abstract class RetailerInspectorService implements ProductInspectorService {
 
 	protected abstract Document receivePageByUrl(String url);
 
